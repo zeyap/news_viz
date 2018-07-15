@@ -7,4 +7,4 @@ $ python manage.py runserver --settings=newsdemo.settings.local
 
 # TODOs
 
-* Install elastic search, replace Postgre with Sqlite
+* Install elastic search, replace Sqlite with Postgre
