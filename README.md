@@ -5,6 +5,5 @@ Run with local setting:
 
 $ python manage.py runserver --settings=newsdemo.settings.local
 
-# TODOs
+# interact with database
 
-* Install elastic search, replace Sqlite with Postgre

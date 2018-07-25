@@ -14,3 +14,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+ELASTICSEARCH_DSL={
+    'default': {
+        'hosts': '66.42.102.161:9200'
+    },
+}
