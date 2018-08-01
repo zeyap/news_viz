@@ -1,7 +1,5 @@
-import urllib3
-http = urllib3.PoolManager()
-
-import json
+from newsdemo.apps.crawler.esutils import ElasticSearchUtil
+es = ElasticSearchUtil()
 
 NEWSPIECE_INDEX_PATH = "http://66.42.102.161:9200/newspieces/"
 
@@ -11,24 +9,13 @@ class NewsPieceBase(object):
         self.url = url
     
     def save(self):
-        encoded_data = json.dumps(self.info).encode('utf-8')
-        r = http.request(
-            'POST',
-             self.url,
-             body = encoded_data,
-             headers={'Content-Type': 'application/json'})
-        print('newspiece save status:',r.status)
+        resp = es.post(self.url,self.info)
+        print('newspiece save status:',resp.status)
     
     def queryDuplicate(self,queryBody,searchUrl):
-        encoded_data = json.dumps(queryBody)
-        r = http.request(
-            'POST',
-            searchUrl,
-            body = encoded_data,
-            headers={'Content-Type': 'application/json'})
-        data = json.loads(r.data.decode('utf-8'))
+        resp = es.post(searchUrl,queryBody)
         # print(data)
-        if(data["hits"]["total"]>0):
+        if(resp.formatted_data["hits"]["total"]>0):
             return False
         else:
             return True

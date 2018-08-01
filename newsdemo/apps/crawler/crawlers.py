@@ -11,7 +11,7 @@ class BaseCrawler(object):
     def run(self):
         print('crawler run')
         info = {
-            "author":'somebody',
+            "author":'somebody33',
             "posted_date":'20180801',
             "title":'title of the news',
             "text":'fake content139407187801'
@@ -21,7 +21,7 @@ class BaseCrawler(object):
             print('a record is saving to es')
             news.save()
         except Exception as err:
-            print('attempt to save a record in es failed. ',self.service, err.args)
+            print('attempt to save a record in es failed. ',self.service, err)
             pass
 
 class TestCrawler(BaseCrawler):

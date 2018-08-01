@@ -21,6 +21,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 
 ALLOWED_HOSTS = []
 
+import djcelery
+djcelery.setup_loader()
+
+BROKER_URL = 'amqp://localhost' #broker agent address
+CELERY_RESULT_BACKEND = 'amqp://localhost'
 
 # Application definition
 
@@ -31,7 +36,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_elasticsearch_dsl'
+    # 'django_elasticsearch_dsl',
+    'newsdemo.apps.crawler',
+    'djcelery'
 ]
 
 ROOT_URLCONF = 'newsdemo.urls'

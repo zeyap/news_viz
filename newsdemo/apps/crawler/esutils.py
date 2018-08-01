@@ -14,6 +14,6 @@ class ElasticSearchUtil(object):
              body = encoded_data,
              headers={'Content-Type': 'application/json'}
         )
-        r.data = json.loads(r.data.decode('utf-8'))
+        r.formatted_data = json.loads(r.data.decode('utf-8'))
         return r
 
