@@ -10,38 +10,46 @@ https://docs.djangoproject.com/en/2.0/howto/deployment/wsgi/
 import os
 
 import threading
+threading._VERBOSE=True
+
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "newsdemo.settings")
+# os.environ['DJANGO_SETTINGS_MODULE'] = 'newsdemo.settings'
 application = get_wsgi_application()
 
 from time import sleep
 import time
 import asyncio
 
-from newsdemo.apps.vis import crawlers
+from newsdemo.apps.crawler import crawlers
 
 FIVE_MINUTES = 5
 news_crawlers = (
     crawlers.TestCrawler(),
 )
 
-async def crawl():
+# async def crawl():
+#     print('1')
+#     for crawler in news_crawlers:
+        
+#         crawler.run()
+#         asyncio.sleep(FIVE_MINUTES)
+#     print('2')
+#     await asyncio.sleep(FIVE_MINUTES)
+
+def crawl():
     print('1')
     for crawler in news_crawlers:
-        
         crawler.run()
         asyncio.sleep(FIVE_MINUTES)
-
     print('2')
-    await asyncio.sleep(FIVE_MINUTES)
 
 def schedule_crawler():
     print('a new crawler is scheduled')
-    def do_create_task():
-        loop.call_soon(crawl)
-    loop.call_soon_threadsafe(do_create_task)
-    threading.Timer(FIVE_MINUTES, schedule_crawler).start()
+    # loop.create_task(crawl)
+    crawl()
+    # threading.Timer(FIVE_MINUTES, schedule_crawler).start()
 
 global loop
 loop = asyncio.new_event_loop()
