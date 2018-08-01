@@ -1,20 +1,30 @@
 # configurations
 
 newsdemo: the main project
-> wsgi.py: create a second thread with a crawler coroutine running every 5 minutes
 
-apps/viz: the app that provide data to user interfaces and for data visualization purpose
+newsdemo/apps/viz: the app for user interfaces
 
-apps/NewsPiece: the app where NewsPiece model(for database) is declared. [Django Model](http://www.runoob.com/django/django-model.html)
+newsdemo/apps/crawler: all methods of crawlers
 
 # run the project
 
-Run with local setting:
+### STEP 1. Install celery:
 
+$ pip install celery
+$ pip install django-celery
+
+Install RabbitMq [here](https://www.rabbitmq.com/download.html) and start it on your computer
+
+$ python manage.py migrate --settings=newsdemo.settings.local
+
+### STEP 2. Open 2 consoles:
+
+Start the user interface process:
 $ python manage.py runserver --settings=newsdemo.settings.local
 
-# interact with database
+Start the auto-crawler process:
+$ python manage.py celery worker --loglevel=info --settings=newsdemo.settings.local
 
-Reference: [Use elasticsearch as database in Django](https://github.com/sabricot/django-elasticsearch-dsl)
+# Write your own crawler and test it
 
-
+See example in newsdemo/apps/crawler/crawlers.py - **class TestCrawler**
