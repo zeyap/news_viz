@@ -15,9 +15,9 @@ from newsdemo.apps.crawler import crawlers
 
 INTERVAL = 100
 news_crawlers = (
-    crawlers.TestCrawler(),
+    # crawlers.TestCrawler(),
     crawlers.neteaseCrawler(),
-    crawlers.sinaCrawler
+    crawlers.sinaCrawler()
 )
 
 def crawl():
