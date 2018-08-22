@@ -59,12 +59,14 @@ class TestCrawler(BaseCrawler):
 
 # crawler for news.163.com
 class neteaseCrawler(BaseCrawler):
-    def __init__(self, link = 'http://news.163.com/14/0928/08/A77DFRRT00014JB6.html'):
+    def __init__(self):
         print('netease crawler init')
-        self.link = link
         super(neteaseCrawler,self).__init__(StandardNewsPiece)
     
-    def run(self):
+    test_link = 'http://news.163.com/14/0928/08/A77DFRRT00014JB6.html'
+
+    def run(self,link = test_link):
+        self.link = link
         res = self.myCrawlingMethod();
         
     def myCrawlingMethod(self):
@@ -133,12 +135,14 @@ class neteaseCrawler(BaseCrawler):
 
 # crawler for http://news.sina.com.cn/
 class sinaCrawler(BaseCrawler):
-    def __init__(self,link = "http://edu.sina.com.cn/gaokao/2018-08-13/doc-ihhqtawy1746376.shtml"):
+    def __init__(self):
         print('sina crawler init')
-        self.link = link
         super(sinaCrawler,self).__init__(StandardNewsPiece)
     
-    def run(self):
+    test_link = "http://edu.sina.com.cn/gaokao/2018-08-13/doc-ihhqtawy1746376.shtml"
+    
+    def run(self,link = test_link):
+        self.link = link
         res = self.myCrawlingMethod();
         
     def myCrawlingMethod(self):

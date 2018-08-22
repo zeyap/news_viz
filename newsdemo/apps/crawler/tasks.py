@@ -12,36 +12,41 @@ app = Celery('tasks', backend=CELERY_RESULT_BACKEND, broker=BROKER_URL,include=[
 # app = Celery('tasks', backend='amqp://localhost', broker='amqp://localhost')
 
 from newsdemo.apps.crawler import crawlers
+from newsdemo.apps.crawler import link_grabber
 
-import pprint
-from googleapiclient.discovery import build
+INTERVAL = 10
+news_crawlers = {
+    'netease':crawlers.neteaseCrawler(),
+    'sina':crawlers.sinaCrawler(),
+    'qq':None,
+    'weibo':None
+}
 
-INTERVAL = 100
-news_crawlers = (
-    # crawlers.TestCrawler(),
-    crawlers.neteaseCrawler(),
-    crawlers.sinaCrawler()
-)
+websites = [
+    {'name':'netease','url':'news.163.com'},
+    {'name':'sina','url':'sina.com.cn'},
+    {'name':'qq','url':'news.qq.com'},
+    {'name':'weibo','url':'weibo.com'}]
 
-def getlink():
-    service = build("news viz", "v1",
-            developerKey="AIzaSyBth5uhNWogGsZT9LbT6pvXaUkSR1BwwWM")
+def get_headlines():
+    return ['harry potter','高考']
 
-    res = service.cse().list(
-        q= "keyword",
-        cx="017050252471438770433:cygqcpwrs7c",
-        num=3
-     ).execute()
-    pprint.pprint(res)
+def crawl(headline):
+    pages = link_grabber.getlink(headline)
 
-def crawl():
-    print('crawl()')
-    for crawler in news_crawlers:
-        crawler.run()
-        time.sleep(INTERVAL)
+    for page in pages:
+        for website in websites:
+            crawler = news_crawlers[website['name']]
+            if page['link'].find(website['url'])>-1 and crawler:
+                crawler.run(page['link'])
+                time.sleep(INTERVAL)
 
 @app.task
 def schedule_crawler():
     while(True):
-        crawl()
-        time.sleep(INTERVAL)
+        headlines = get_headlines()
+        for headline in headlines:
+            print(headline)
+            crawl(headline)
+            time.sleep(INTERVAL)
+        
