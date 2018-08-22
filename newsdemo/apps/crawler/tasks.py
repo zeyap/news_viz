@@ -13,12 +13,26 @@ app = Celery('tasks', backend=CELERY_RESULT_BACKEND, broker=BROKER_URL,include=[
 
 from newsdemo.apps.crawler import crawlers
 
+import pprint
+from googleapiclient.discovery import build
+
 INTERVAL = 100
 news_crawlers = (
     crawlers.TestCrawler(),
     crawlers.neteaseCrawler(),
     crawlers.sinaCrawler
 )
+
+def getlink():
+    service = build("news viz", "v1",
+            developerKey="AIzaSyBth5uhNWogGsZT9LbT6pvXaUkSR1BwwWM")
+
+    res = service.cse().list(
+        q= "keyword",
+        cx="017050252471438770433:cygqcpwrs7c",
+        num=3
+     ).execute()
+    pprint.pprint(res)
 
 def crawl():
     print('crawl()')

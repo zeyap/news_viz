@@ -1,6 +1,9 @@
 import logging
 
+from urllib import request
+from bs4 import BeautifulSoup
 import xlrd
+import jieba
 import time
 
 from django.utils import timezone
