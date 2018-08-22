@@ -18,9 +18,8 @@ class NewsPieceBase(object):
         if(resp.formatted_data["hits"]["total"]>0):
             return False
         else:
-            return True
-            
-
+            return True           
+           
 class StandardNewsPiece(NewsPieceBase):
     def __init__(self,info):
         self.searchUrl = NEWSPIECE_INDEX_PATH+"_search"
