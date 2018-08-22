@@ -10,6 +10,10 @@ from django.utils import timezone
 
 from newsdemo.apps.crawler.newspiece import StandardNewsPiece
 
+from bs4 import BeautifulSoup
+
+from urllib import request
+
 class BaseCrawler(object):
     def __init__(self, service):
         self.service = service
@@ -55,20 +59,19 @@ class TestCrawler(BaseCrawler):
 
 # crawler for news.163.com
 class neteaseCrawler(BaseCrawler):
-    def __init__(self,link):
+    def __init__(self, link = 'http://news.163.com/14/0928/08/A77DFRRT00014JB6.html'):
         print('netease crawler init')
         self.link = link
         super(neteaseCrawler,self).__init__(StandardNewsPiece)
     
     def run(self):
-        res = self.myCrawlingMethod(); # write your own method to crawl some specific websites
-        # self.save(res);# uncomment this line to save result in elasticsearch
+        res = self.myCrawlingMethod();
         
     def myCrawlingMethod(self):
         #example page
         #link = "http://news.163.com/14/0928/08/A77DFRRT00014JB6.html" 
         data_crawled = self.get_news_text()
-        print('result of neteaseCrawler',data_crawled)
+        # print('result of neteaseCrawler',data_crawled)
         return data_crawled
         
     def get_news_text(self):
@@ -80,11 +83,11 @@ class neteaseCrawler(BaseCrawler):
         download_html = download_response.read().decode('GBK','ignore')
         soupTexts = BeautifulSoup(download_html, 'lxml')     
         news_text = {
-                "author":'somebody',
-                "posted_date":'20180801',
-                "title":'title of the news',
-                "text":'fake content139407187801'
-            }
+            "author":'',
+            "posted_date":'',
+            "title":'',
+            "text":''
+        }
         #title        
         divs = soupTexts.find_all(class_ = 'post_content_main')
         for div in divs:
@@ -125,25 +128,24 @@ class neteaseCrawler(BaseCrawler):
 
         text = text.replace("\n","")
         news_text["text"] = text
-        #print (news_text)
+        # print (news_text)
         return news_text
 
 # crawler for http://news.sina.com.cn/
 class sinaCrawler(BaseCrawler):
-    def __init__(self,link):
+    def __init__(self,link = "http://edu.sina.com.cn/gaokao/2018-08-13/doc-ihhqtawy1746376.shtml"):
         print('sina crawler init')
         self.link = link
         super(sinaCrawler,self).__init__(StandardNewsPiece)
     
     def run(self):
-        res = self.myCrawlingMethod(); # write your own method to crawl some specific websites
-        # self.save(res);# uncomment this line to save result in elasticsearch
+        res = self.myCrawlingMethod();
         
     def myCrawlingMethod(self):
         #example page
         #link = "http://edu.sina.com.cn/gaokao/2018-08-13/doc-ihhqtawy1746376.shtml" 
         data_crawled = self.get_news_text()
-        print('result of neteaseCrawler',data_crawled)
+        print('result of sinaCrawler',data_crawled)
         return data_crawled
         
     def get_news_text(self):
@@ -155,11 +157,11 @@ class sinaCrawler(BaseCrawler):
         download_html = download_response.read().decode('UTF-8','ignore')
         soupTexts = BeautifulSoup(download_html, 'lxml')
         news_text = {
-                "author":'somebody',
-                "posted_date":'20180801',
-                "title":'title of the news',
-                "text":'fake content139407187801'
-            }
+            "author":'',
+            "posted_date":'',
+            "title":'',
+            "text":''
+        }
         #title
         divs = soupTexts.find_all(class_ = 'main-content w1240')
         for div in divs:
@@ -196,5 +198,5 @@ class sinaCrawler(BaseCrawler):
             text += p.get_text()
         text = text.replace("\u3000","")
         news_text["text"] = text             
-        #print (news_text)
+        # print (news_text)
         return news_text

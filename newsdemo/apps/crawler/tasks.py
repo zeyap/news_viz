@@ -18,9 +18,9 @@ from googleapiclient.discovery import build
 
 INTERVAL = 100
 news_crawlers = (
-    crawlers.TestCrawler(),
+    # crawlers.TestCrawler(),
     crawlers.neteaseCrawler(),
-    crawlers.sinaCrawler
+    crawlers.sinaCrawler()
 )
 
 def getlink():
