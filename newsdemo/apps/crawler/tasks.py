@@ -13,6 +13,7 @@ app = Celery('tasks', backend=CELERY_RESULT_BACKEND, broker=BROKER_URL,include=[
 
 from newsdemo.apps.crawler import crawlers
 from newsdemo.apps.crawler import link_grabber
+from newsdemo.apps.crawler import clustering
 
 INTERVAL = 10
 news_crawlers = {
@@ -34,19 +35,22 @@ def get_headlines():
 def crawl(headline):
     pages = link_grabber.getlink(headline)
 
+    formatted_page_list = []
+
     for page in pages:
         for website in websites:
             crawler = news_crawlers[website['name']]
             if page['link'].find(website['url'])>-1 and crawler:
-                crawler.run(page['link'])
+                formatted_page_list.append(crawler.run(page['link']))
                 time.sleep(INTERVAL)
+    
+    return formatted_page_list
 
 @app.task
 def schedule_crawler():
-    while(True):
-        headlines = get_headlines()
-        for headline in headlines:
-            print(headline)
-            crawl(headline)
-            time.sleep(INTERVAL)
+    headlines = get_headlines()
+    for headline in headlines:
+        print(headline)
+        clusters = clustering.cluster(crawl(headline))
+        time.sleep(INTERVAL)
         

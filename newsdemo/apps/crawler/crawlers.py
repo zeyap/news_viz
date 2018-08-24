@@ -67,7 +67,7 @@ class neteaseCrawler(BaseCrawler):
 
     def run(self,link = test_link):
         self.link = link
-        res = self.myCrawlingMethod();
+        return self.myCrawlingMethod();
         
     def myCrawlingMethod(self):
         #example page
@@ -143,13 +143,13 @@ class sinaCrawler(BaseCrawler):
     
     def run(self,link = test_link):
         self.link = link
-        res = self.myCrawlingMethod();
+        return self.myCrawlingMethod();
         
     def myCrawlingMethod(self):
         #example page
         #link = "http://edu.sina.com.cn/gaokao/2018-08-13/doc-ihhqtawy1746376.shtml" 
         data_crawled = self.get_news_text()
-        print('result of sinaCrawler',data_crawled)
+        # print('result of sinaCrawler',data_crawled)
         return data_crawled
         
     def get_news_text(self):
