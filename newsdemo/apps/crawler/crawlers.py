@@ -166,41 +166,96 @@ class sinaCrawler(BaseCrawler):
             "title":'',
             "text":''
         }
-        #title
-        divs = soupTexts.find_all(class_ = 'main-content w1240')
-        for div in divs:
-            title = div.h1.get_text()
-        news_text["title"] = title      
-        #time
-        div = soupTexts.find(class_ = 'date-source')
-        span = div.find_all('span')
-        source = span[0].get_text()
+        #define two crawlers for news pages of old version and new version
+        def get_text_new(download_url,soupTexts,news_text):
+            #title
+            divs = soupTexts.find_all(class_ = 'main-content w1240')
+            for div in divs:
+                div_title = div.find(class_ = 'main-title')
+                title = div_title.get_text()
+            news_text["title"] = title
+            #time
+            div = soupTexts.find(class_ = 'date-source')
+            span = div.find_all('span')
+            source = span[0].get_text()
+            try:
+                author = span[1].get_text()
+            except IndexError:
+                author = div.a.get_text()
+            public_time = []
+            for char in source:
+                if ((char == "\n") or (char == "年") or (char == "月") or (char == "日")or (char == " ")):
+                    source = source.replace(char,"")
+            for num in source:
+                if (num != "\u3000"):
+                    public_time.append(num)
+                else:
+                    break
+            time_str = ''.join(public_time)
+            print (time_str)
+            time_tuple = time.strptime(time_str, '%Y%m%d%H:%M')
+            news_text["posted_date"] = time_tuple         
+            #author
+            news_text["author"] = author          
+            #text
+            text_source = soupTexts.find(class_ = 'article')
+            text = ''
+            para = text_source.find_all("p")
+            for p in para:
+                text += p.get_text()    
+            text = text.replace("\u3000","")
+            news_text["text"] = text
+            return news_text
+
+        def get_text_old(download_url):
+            head = {}
+            head['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
+            download_req = request.Request(url = download_url, headers = head)
+            download_response = request.urlopen(download_req)
+            download_html = download_response.read().decode('GBK','ignore')
+            soupTexts = BeautifulSoup(download_html, 'lxml')
+            
+            news_text = {
+                "author":'somebody',
+                "posted_date":'20180801',
+                "title":'title of the news',
+                "text":'fake content139407187801'
+            }          
+            #title
+            divs = soupTexts.find(class_ = 'blkContainerSblk')
+            title = divs.h1.get_text()
+            news_text["title"] = title          
+            #author
+            author_div = divs.find(class_= 'artInfo')       
+            author = author_div.find('a').get_text()
+            news_text["author"] = author           
+            #time
+            span = author_div.find_all('span')
+            pub_time = span[0].get_text()
+            print (pub_time)
+            for char in pub_time:
+                if ((char == "年") or (char == "月") or (char == "日")or (char == " ")):
+                    pub_time = pub_time.replace(char,"")
+            time_tuple = time.strptime(pub_time, '%Y%m%d%H:%M')
+            news_text["posted_date"] = time_tuple           
+            #text
+            text = ''
+            text_p = divs.find_all('p')
+            print (text_p)
+            for para in text_p:
+                text +=para.get_text()
+            text = text.replace("\u3000","")
+            text = text.replace("\n","")
+            news_text["text"] = text   
+            return news_text
+
+        #test version
         try:
-            author = span[1].get_text()
-        except IndexError:
-            author = div.a.get_text()
-        public_time = []
-        for char in source:
-            if ((char == "\n") or (char == "年") or (char == "月") or (char == "日")or (char == " ")):
-                source = source.replace(char,"")
-        for num in source:
-            if (num != "\u3000"):
-                public_time.append(num)
-            else:
-                break
-        time_str = ''.join(public_time)
-        print (time_str)
-        time_tuple = time.strptime(time_str, '%Y%m%d%H:%M')
-        news_text["posted_date"] = time_tuple        
-        #author
-        news_text["author"] = author        
-        #text
-        text_source = soupTexts.find(class_ = 'article')
-        text = ''
-        para = text_source.find_all("p")
-        for p in para:
-            text += p.get_text()
-        text = text.replace("\u3000","")
-        news_text["text"] = text             
-        # print (news_text)
+            divs = soupTexts.find_all(class_ = 'main-content w1240')
+            for div in divs:
+                title = div.h1.get_text()
+            news_text = get_text_new(download_url,soupTexts,news_text)      
+        except UnboundLocalError:
+            news_text = get_text_old(download_url)
         return news_text
+
