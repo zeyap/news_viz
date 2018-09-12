@@ -5,14 +5,12 @@ from bs4 import BeautifulSoup
 import xlrd
 import jieba
 import time
+import chardet
 
 from django.utils import timezone
 
 from newsdemo.apps.crawler.newspiece import StandardNewsPiece
 
-from bs4 import BeautifulSoup
-
-from urllib import request
 
 class BaseCrawler(object):
     def __init__(self, service):
@@ -154,11 +152,15 @@ class sinaCrawler(BaseCrawler):
         
     def get_news_text(self):
         download_url = self.link
+        #get encoding info
+        read_data = urllib.request.urlopen(download_url).read()
+        decode_method = chardet.detect(read_data)['encoding']
+
         head = {}
         head['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
         download_req = request.Request(url = download_url, headers = head)
         download_response = request.urlopen(download_req)
-        download_html = download_response.read().decode('UTF-8','ignore')
+        download_html = download_response.read().decode(decode_method,'ignore')
         soupTexts = BeautifulSoup(download_html, 'lxml')
         news_text = {
             "author":'',
@@ -207,20 +209,7 @@ class sinaCrawler(BaseCrawler):
             news_text["text"] = text
             return news_text
 
-        def get_text_old(download_url):
-            head = {}
-            head['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
-            download_req = request.Request(url = download_url, headers = head)
-            download_response = request.urlopen(download_req)
-            download_html = download_response.read().decode('GBK','ignore')
-            soupTexts = BeautifulSoup(download_html, 'lxml')
-            
-            news_text = {
-                "author":'somebody',
-                "posted_date":'20180801',
-                "title":'title of the news',
-                "text":'fake content139407187801'
-            }          
+        def get_text_old(download_url,soupTexts,news_text):        
             #title
             divs = soupTexts.find(class_ = 'blkContainerSblk')
             title = divs.h1.get_text()
@@ -256,6 +245,6 @@ class sinaCrawler(BaseCrawler):
                 title = div.h1.get_text()
             news_text = get_text_new(download_url,soupTexts,news_text)      
         except UnboundLocalError:
-            news_text = get_text_old(download_url)
+            news_text = get_text_old(download_url,soupTexts,news_text)
         return news_text
 
