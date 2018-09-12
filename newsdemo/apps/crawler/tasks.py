@@ -30,7 +30,7 @@ websites = [
     {'name':'weibo','url':'weibo.com'}]
 
 def get_headlines():
-    return ['harry potter','高考']
+    return ['如懿传','高考','滴滴']
 
 def crawl(headline):
     pages = link_grabber.getlink(headline)

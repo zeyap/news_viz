@@ -1,6 +1,7 @@
 import logging
 
 from urllib import request
+import urllib
 from bs4 import BeautifulSoup
 import xlrd
 import jieba
